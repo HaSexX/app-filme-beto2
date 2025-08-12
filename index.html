@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protótipo do App do Beto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hidden { display: none; }
+        .scroll-container { scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+        .scroll-page { scroll-snap-align: start; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .header-input {
+            background-color: transparent; border: none; color: white;
+            font-weight: 600; font-size: 1.125rem; outline: none; width: 100%;
+        }
+        .header-input::placeholder { color: #d1d5db; }
+        .header-input:focus { ring: none; box-shadow: none; border-bottom: 1px solid white; }
+
+        .info-input {
+            font-weight: 600; border: none; width: 100%; padding: 2px 0;
+            background-color: transparent; border-bottom: 1px solid #f3f4f6;
+        }
+        .info-input:focus { outline: none; border-bottom: 1px solid #0D2C54; }
+
+        /* Estilo para a notificação de "Salvo" */
+        #save-notification {
+            transition: opacity 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-300 flex items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-sm h-[850px] bg-white shadow-2xl rounded-3xl overflow-hidden flex flex-col">
+
+        <!-- PÁGINA 1: TELA INICIAL -->
+        <div id="page1" class="flex flex-col h-full bg-gray-100">
+            <header class="bg-[#0D2C54] text-white p-4 pt-6 shadow-md flex justify-between items-center">
+                <div class="flex items-center space-x-3 flex-grow">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                    <input type="text" id="name-input" class="header-input" placeholder="Digite seu nome">
+                </div>
+                <div class="flex items-center space-x-4 pl-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                    <div id="initial-circle" class="bg-white text-[#0D2C54] rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg flex-shrink-0">?</div>
+                </div>
+            </header>
+            <main class="flex-grow p-4 space-y-4">
+                <button id="btn-goto-page2" class="w-full bg-green-500 text-white p-4 rounded-xl flex justify-between items-center shadow-lg"><div><h2 class="font-bold text-xl text-left">CONDUTOR</h2><p class="text-left">Gerencie sua habilitação</p></div><img src="https://api.iconify.design/material-symbols:car-crash-outline.svg?color=white" class="h-12 w-12" alt="Ícone de carro"></button>
+                <div class="w-full bg-yellow-400 text-white p-4 rounded-xl flex justify-between items-center shadow-lg"><div><h2 class="font-bold text-xl text-left">VEÍCULOS</h2><p class="text-left">Acesso ao CRLV-e, venda digital</p></div><img src="https://api.iconify.design/material-symbols:directions-car-outline.svg?color=white" class="h-12 w-12" alt="Ícone de carro"></div>
+                <div class="w-full bg-blue-800 text-white p-4 rounded-xl flex justify-between items-center shadow-lg"><div><h2 class="font-bold text-xl text-left">INFRAÇÕES</h2><p class="text-left">Visualize e pague infrações com até 40% de desconto</p></div><img src="https://api.iconify.design/material-symbols:car-tag.svg?color=white" class="h-12 w-12" alt="Ícone de carro com etiqueta"></div>
+                <div class="w-full bg-blue-500 text-white p-4 rounded-xl flex justify-between items-center shadow-lg"><div><h2 class="font-bold text-xl text-left">EDUCAÇÃO</h2><p class="text-left">Conheça nossas campanhas e projetos</p></div><img src="https://api.iconify.design/material-symbols:school-outline.svg?color=white" class="h-12 w-12" alt="Ícone de educação"></div>
+            </main>
+            <footer class="p-4 flex justify-center items-center"><img src="https://api.iconify.design/material-symbols:person-pin-circle-outline.svg?color=%23888888" class="h-12 w-12" alt="Ícone de usuário"></footer>
+        </div>
+
+        <!-- PÁGINA 2: CONDUTOR (EDITÁVEL) -->
+        <div id="page2" class="hidden flex-col h-full bg-gray-100">
+            <header class="bg-[#0D2C54] text-white p-4 pt-6 shadow-md flex items-center space-x-4">
+                <button class="btn-back" data-target="page1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                <h1 class="text-xl font-bold">CONDUTOR</h1>
+            </header>
+            <main class="flex-grow p-4 space-y-4 overflow-y-auto">
+                <div class="bg-white p-4 rounded-xl shadow-md space-y-4">
+                    <div class="flex justify-between items-start">
+                        <h2 class="font-bold text-lg text-gray-700">Informações do Condutor</h2>
+                        <div class="text-center"><img src="https://api.iconify.design/material-symbols:shield-check-outline.svg?color=gold" class="h-8 w-8 mx-auto" alt="Selo Bom Condutor"><p class="text-xs font-semibold text-gray-500">BOM CONDUTOR</p></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-4 text-sm">
+                        <div class="col-span-2"><p class="text-gray-500">Nome</p><input type="text" id="p2-name" class="info-input" placeholder="Nome Completo"></div>
+                        <div><p class="text-gray-500">CPF</p><input type="text" id="p2-cpf" class="info-input" placeholder="000.000.000-00"></div>
+                        <div><p class="text-gray-500">Sexo</p><input type="text" id="p2-sexo" class="info-input" placeholder="Masculino/Feminino"></div>
+                        <div><p class="text-gray-500">Categoria</p><input type="text" id="p2-categoria" class="info-input" value="AB"></div>
+                        <div><p class="text-gray-500">UF de Emissão</p><input type="text" id="p2-uf" class="info-input" placeholder="UF"></div>
+                        <div><p class="text-gray-500">Data de Validade</p><input type="text" id="p2-validade" class="info-input" placeholder="dd/mm/aaaa"></div>
+                        <div><p class="text-gray-500">Data de Emissão</p><input type="text" id="p2-emissao" class="info-input" placeholder="dd/mm/aaaa"></div>
+                    </div>
+                </div>
+                <!-- Botão Salvar -->
+                <button id="btn-save" class="w-full bg-green-600 text-white font-bold p-3 rounded-xl shadow-md hover:bg-green-700 transition-colors">Salvar Alterações</button>
+                <div id="save-notification" class="text-center text-green-600 font-semibold opacity-0">Salvo com sucesso!</div>
+
+                <div class="grid grid-cols-2 gap-4 pt-4">
+                    <button id="btn-goto-page3" class="bg-white p-4 rounded-xl shadow text-center space-y-2"><img src="https://api.iconify.design/material-symbols:id-card-outline.svg?color=%230D2C54" class="h-8 w-8 mx-auto" alt="Ícone habilitação"><p class="font-semibold text-sm">HABILITAÇÃO</p></button>
+                    <div class="bg-white p-4 rounded-xl shadow text-center space-y-2"><img src="https://api.iconify.design/material-symbols:person-check-outline.svg?color=%230D2C54" class="h-8 w-8 mx-auto" alt="Ícone cadastro positivo"><p class="font-semibold text-sm">CADASTRO POSITIVO</p></div>
+                    <div class="bg-white p-4 rounded-xl shadow text-center space-y-2"><img src="https://api.iconify.design/material-symbols:science-outline.svg?color=%230D2C54" class="h-8 w-8 mx-auto" alt="Ícone exames"><p class="font-semibold text-sm">EXAMES TOXICOLÓGICOS</p></div>
+                    <div class="bg-white p-4 rounded-xl shadow text-center space-y-2"><img src="https://api.iconify.design/material-symbols:menu-book-outline.svg?color=%230D2C54" class="h-8 w-8 mx-auto" alt="Ícone cursos"><p class="font-semibold text-sm">CURSOS ESPECIALIZADOS</p></div>
+                    <div class="bg-white p-4 rounded-xl shadow text-center space-y-2 col-span-2"><img src="https://api.iconify.design/material-symbols:local-parking-outline.svg?color=%230D2C54" class="h-8 w-8 mx-auto" alt="Ícone estacionamento"><p class="font-semibold text-sm">CREDENCIAL DE ESTACIONAMENTO</p></div>
+                </div>
+            </main>
+        </div>
+
+        <!-- PÁGINA 3: HABILITAÇÃO (COM ROLAGEM) -->
+        <div id="page3" class="hidden flex flex-col h-full bg-white">
+            <header class="bg-[#0D2C54] text-white p-4 pt-6 shadow-md flex items-center space-x-4 z-10">
+                <button class="btn-back" data-target="page2"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                <div><h1 class="text-xl font-bold">HABILITAÇÃO</h1><p id="update-timestamp" class="text-xs text-gray-300">Atualizado em: Carregando...</p></div>
+            </header>
+            <div class="flex-grow overflow-y-auto no-scrollbar">
+                <main class="min-h-[60vh] flex flex-col p-4 space-y-4">
+                    <div id="image-scroller" class="flex-grow flex overflow-x-auto scroll-container no-scrollbar rounded-lg bg-gray-200"></div>
+                    <div id="image-dots" class="flex justify-center items-center p-2"></div>
+                </main>
+                <footer class="bg-gray-100 p-4 border-t border-gray-200 space-y-3">
+                    <button class="w-full bg-white text-gray-800 font-semibold p-3 rounded-xl flex items-center justify-center space-x-3 shadow"><img src="https://api.iconify.design/material-symbols:history.svg?color=%23374151" class="h-6 w-6" alt="Ícone histórico"><span>Histórico de emissões da CNH</span></button>
+                    <button class="w-full bg-white text-gray-800 font-semibold p-3 rounded-xl flex items-center justify-center space-x-3 shadow"><img src="https://api.iconify.design/material-symbols:ios-share-outline.svg?color=%23374151" class="h-6 w-6" alt="Ícone exportar"><span>Exportar</span></button>
+                    <button class="w-full bg-white text-gray-800 font-semibold p-3 rounded-xl flex items-center justify-center space-x-3 shadow"><img src="https://api.iconify.design/material-symbols:delete-outline.svg?color=%23374151" class="h-6 w-6" alt="Ícone remover"><span>Remover</span></button>
+                    <button class="w-full bg-white text-gray-800 font-semibold p-3 rounded-xl flex items-center justify-center space-x-3 shadow"><img src="https://api.iconify.design/material-symbols:qr-code-scanner.svg?color=%23374151" class="h-6 w-6" alt="Ícone QR Code"><span>Copiar QR Code</span></button>
+                </footer>
+            </div>
+        </div>
+        <input type="file" id="image-upload-input" accept="image/*" class="hidden" multiple>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- ELEMENTOS DO DOM ---
+        const pages = { page1: document.getElementById('page1'), page2: document.getElementById('page2'), page3: document.getElementById('page3') };
+        const nameInput = document.getElementById('name-input');
+        const initialCircle = document.getElementById('initial-circle');
+        const infoInputs = {
+            p2_name: document.getElementById('p2-name'),
+            p2_cpf: document.getElementById('p2-cpf'),
+            p2_sexo: document.getElementById('p2-sexo'),
+            p2_categoria: document.getElementById('p2-categoria'),
+            p2_uf: document.getElementById('p2-uf'),
+            p2_validade: document.getElementById('p2-validade'),
+            p2_emissao: document.getElementById('p2-emissao'),
+        };
+
+        // --- NAVEGAÇÃO ---
+        function showPage(pageId) {
+            Object.values(pages).forEach(page => page.classList.add('hidden'));
+            if (pages[pageId]) pages[pageId].classList.remove('hidden');
+        }
+        document.getElementById('btn-goto-page2').addEventListener('click', () => showPage('page2'));
+        document.getElementById('btn-goto-page3').addEventListener('click', () => showPage('page3'));
+        document.querySelectorAll('.btn-back').forEach(button => {
+            button.addEventListener('click', () => showPage(button.getAttribute('data-target')));
+        });
+
+        // --- SINCRONIZAÇÃO E PERSISTÊNCIA DE DADOS ---
+        nameInput.addEventListener('input', () => {
+            const name = nameInput.value;
+            initialCircle.textContent = name.length > 0 ? name.charAt(0).toUpperCase() : '?';
+            infoInputs.p2_name.value = name.toUpperCase();
+        });
+
+        function saveData() {
+            const dataToSave = { name: nameInput.value };
+            for (const key in infoInputs) {
+                dataToSave[key] = infoInputs[key].value;
+            }
+            localStorage.setItem('betoAppData', JSON.stringify(dataToSave));
+            
+            // Mostra notificação
+            const notification = document.getElementById('save-notification');
+            notification.classList.remove('opacity-0');
+            setTimeout(() => {
+                notification.classList.add('opacity-0');
+            }, 2000);
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('betoAppData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                nameInput.value = data.name || '';
+                for (const key in infoInputs) {
+                    if (data[key]) {
+                        infoInputs[key].value = data[key];
+                    }
+                }
+                // Dispara o evento de input para atualizar a UI (círculo e nome na pág 2)
+                nameInput.dispatchEvent(new Event('input'));
+            }
+        }
+        document.getElementById('btn-save').addEventListener('click', saveData);
+
+        // --- LÓGICA DA PÁGINA 3 ---
+        const imageUploadInput = document.getElementById('image-upload-input');
+        const imageScroller = document.getElementById('image-scroller');
+        const imageDotsContainer = document.getElementById('image-dots');
+        let uploadedImages = [];
+        const MAX_IMAGES = 4;
+
+        function createUploadButton() {
+            const label = document.createElement('label');
+            label.className = 'w-full h-full flex-shrink-0 scroll-page flex flex-col items-center justify-center border-2 border-dashed border-gray-400 rounded-lg cursor-pointer hover:bg-gray-300 transition-colors p-4';
+            label.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" /></svg><span class="mt-2 text-sm text-gray-600">${uploadedImages.length === 0 ? 'Toque para carregar uma imagem' : 'Adicionar mais'}</span>`;
+            label.addEventListener('click', () => imageUploadInput.click());
+            return label;
+        }
+
+        function renderImageScroller() {
+            imageScroller.innerHTML = '';
+            uploadedImages.forEach(imgSrc => {
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'w-full h-full flex-shrink-0 scroll-page flex items-center justify-center p-2';
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.className = 'max-w-full max-h-full object-contain rounded-lg';
+                imgContainer.appendChild(img);
+                imageScroller.appendChild(imgContainer);
+            });
+            if (uploadedImages.length < MAX_IMAGES) {
+                imageScroller.appendChild(createUploadButton());
+            }
+            updateImageDots();
+        }
+        
+        function updateImageDots() {
+            const dots = imageDotsContainer.querySelectorAll('div');
+            const pageIndex = Math.round(imageScroller.scrollLeft / imageScroller.clientWidth);
+            dots.forEach((dot, index) => {
+                 const isActive = (index === pageIndex && index < uploadedImages.length);
+                 dot.className = `w-2 h-2 rounded-full mx-1 transition-all ${isActive ? 'bg-[#0D2C54] w-2.5 h-2.5' : 'bg-gray-400'}`;
+            });
+        }
+
+        imageUploadInput.addEventListener('change', (event) => {
+            const files = Array.from(event.target.files);
+            const spaceLeft = MAX_IMAGES - uploadedImages.length;
+            const filesToProcess = files.slice(0, spaceLeft);
+            filesToProcess.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedImages.push(e.target.result);
+                    renderImageScroller();
+                };
+                reader.readAsDataURL(file);
+            });
+            event.target.value = '';
+        });
+        
+        imageScroller.addEventListener('scroll', updateImageDots);
+
+        function initializeDots() {
+            imageDotsContainer.innerHTML = '';
+            for (let i = 0; i < MAX_IMAGES; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'w-2 h-2 bg-gray-400 rounded-full mx-1 transition-all';
+                imageDotsContainer.appendChild(dot);
+            }
+        }
+
+        function padZero(num) { return num.toString().padStart(2, '0'); }
+        function updateDateTime() {
+            const timestampElement = document.getElementById('update-timestamp');
+            const now = new Date();
+            timestampElement.textContent = `Atualizado em: ${padZero(now.getDate())}/${padZero(now.getMonth() + 1)}/${now.getFullYear()} - ${padZero(now.getHours())}:${padZero(now.getMinutes())}`;
+        }
+
+        // --- INICIALIZAÇÃO GERAL ---
+        updateDateTime();
+        setInterval(updateDateTime, 1000 * 60);
+        initializeDots();
+        renderImageScroller();
+        loadData(); // Carrega os dados salvos
+        showPage('page1'); // Começa na página 1
+    });
+    </script>
+</body>
+</html>
