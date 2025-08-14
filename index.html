@@ -29,15 +29,12 @@
         }
         .info-input:focus { outline: none; border-bottom: 1px solid #0D2C54; }
 
-        /* Estilo para a notificação de "Salvo" */
-        #save-notification {
-            transition: opacity 0.5s ease-in-out;
-        }
+        #save-notification { transition: opacity 0.5s ease-in-out; }
     </style>
 </head>
 <body class="bg-gray-300 flex items-center justify-center min-h-screen">
 
-    <div class="w-full max-w-sm h-[850px] bg-white shadow-2xl rounded-3xl overflow-hidden flex flex-col">
+    <div id="app-container" class="w-full max-w-sm h-[850px] bg-white shadow-2xl rounded-3xl overflow-hidden flex flex-col">
 
         <!-- PÁGINA 1: TELA INICIAL -->
         <div id="page1" class="flex flex-col h-full bg-gray-100">
@@ -47,6 +44,12 @@
                     <input type="text" id="name-input" class="header-input" placeholder="Digite seu nome">
                 </div>
                 <div class="flex items-center space-x-4 pl-3">
+                    <!-- Botão de Tela Cheia -->
+                    <button id="fullscreen-btn" title="Tela Cheia" class="text-white hover:text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 1v4m0 0h-4m4 0l-5-5" />
+                        </svg>
+                    </button>
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
                     <div id="initial-circle" class="bg-white text-[#0D2C54] rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg flex-shrink-0">?</div>
                 </div>
@@ -82,10 +85,8 @@
                         <div><p class="text-gray-500">Data de Emissão</p><input type="text" id="p2-emissao" class="info-input" placeholder="dd/mm/aaaa"></div>
                     </div>
                 </div>
-                <!-- Botão Salvar -->
                 <button id="btn-save" class="w-full bg-green-600 text-white font-bold p-3 rounded-xl shadow-md hover:bg-green-700 transition-colors">Salvar Alterações</button>
                 <div id="save-notification" class="text-center text-green-600 font-semibold opacity-0">Salvo com sucesso!</div>
-
                 <div class="grid grid-cols-2 gap-4 pt-4">
                     <button id="btn-goto-page3" class="bg-white p-4 rounded-xl shadow text-center space-y-2"><img src="https://api.iconify.design/material-symbols:id-card-outline.svg?color=%230D2C54" class="h-8 w-8 mx-auto" alt="Ícone habilitação"><p class="font-semibold text-sm">HABILITAÇÃO</p></button>
                     <div class="bg-white p-4 rounded-xl shadow text-center space-y-2"><img src="https://api.iconify.design/material-symbols:person-check-outline.svg?color=%230D2C54" class="h-8 w-8 mx-auto" alt="Ícone cadastro positivo"><p class="font-semibold text-sm">CADASTRO POSITIVO</p></div>
@@ -121,16 +122,14 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // --- ELEMENTOS DO DOM ---
+        const appContainer = document.getElementById('app-container');
         const pages = { page1: document.getElementById('page1'), page2: document.getElementById('page2'), page3: document.getElementById('page3') };
         const nameInput = document.getElementById('name-input');
         const initialCircle = document.getElementById('initial-circle');
         const infoInputs = {
-            p2_name: document.getElementById('p2-name'),
-            p2_cpf: document.getElementById('p2-cpf'),
-            p2_sexo: document.getElementById('p2-sexo'),
-            p2_categoria: document.getElementById('p2-categoria'),
-            p2_uf: document.getElementById('p2-uf'),
-            p2_validade: document.getElementById('p2-validade'),
+            p2_name: document.getElementById('p2-name'), p2_cpf: document.getElementById('p2-cpf'),
+            p2_sexo: document.getElementById('p2-sexo'), p2_categoria: document.getElementById('p2-categoria'),
+            p2_uf: document.getElementById('p2-uf'), p2_validade: document.getElementById('p2-validade'),
             p2_emissao: document.getElementById('p2-emissao'),
         };
 
@@ -145,6 +144,22 @@
             button.addEventListener('click', () => showPage(button.getAttribute('data-target')));
         });
 
+        // --- TELA CHEIA ---
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        fullscreenBtn.addEventListener('click', toggleFullScreen);
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                // Para tela cheia, usamos o container do app, não o documentElement, para manter o layout centrado
+                appContainer.requestFullscreen().catch(err => {
+                    console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
         // --- SINCRONIZAÇÃO E PERSISTÊNCIA DE DADOS ---
         nameInput.addEventListener('input', () => {
             const name = nameInput.value;
@@ -158,13 +173,9 @@
                 dataToSave[key] = infoInputs[key].value;
             }
             localStorage.setItem('betoAppData', JSON.stringify(dataToSave));
-            
-            // Mostra notificação
             const notification = document.getElementById('save-notification');
             notification.classList.remove('opacity-0');
-            setTimeout(() => {
-                notification.classList.add('opacity-0');
-            }, 2000);
+            setTimeout(() => { notification.classList.add('opacity-0'); }, 2000);
         }
 
         function loadData() {
@@ -173,11 +184,8 @@
                 const data = JSON.parse(savedData);
                 nameInput.value = data.name || '';
                 for (const key in infoInputs) {
-                    if (data[key]) {
-                        infoInputs[key].value = data[key];
-                    }
+                    if (data[key]) infoInputs[key].value = data[key];
                 }
-                // Dispara o evento de input para atualizar a UI (círculo e nome na pág 2)
                 nameInput.dispatchEvent(new Event('input'));
             }
         }
@@ -262,9 +270,10 @@
         setInterval(updateDateTime, 1000 * 60);
         initializeDots();
         renderImageScroller();
-        loadData(); // Carrega os dados salvos
-        showPage('page1'); // Começa na página 1
+        loadData();
+        showPage('page1');
     });
     </script>
 </body>
 </html>
+
